@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<person user="james">
-  <firstName>James</firstName>
-  <lastName>Bond</lastName>
-  <city>London</city>
+<person user="grace">
+  <firstName>Grace</firstName>
+  <lastName>Hopper</lastName>
+  <city>New York</city>
 </person>

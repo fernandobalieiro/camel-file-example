@@ -7,6 +7,7 @@ https://docs.google.com/presentation/d/1Z-NWwgoZZKls_75qj9JLZaVSmTgKBGihmaVtY1n2
 ```bash
 git clone https://github.com/fernandobalieiro/camel-example-file.git
 cd camel-example-file
+docker volume prune -f; docker compose down -v; docker compose up -d --remove-orphans
 mvn clean io.hawt:hawtio-maven-plugin:2.17.7:camel
 cp src/other_data/* src/data
 ```
