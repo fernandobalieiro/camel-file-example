@@ -17,30 +17,28 @@ public class MyRouteBuilder extends RouteBuilder {
         from("file:src/data?noop=true").id("fromDir")
             .choice()
                 .when(xpath("/person/city = 'London'"))
-                    .log("${body}")
-                    .unmarshal().jacksonXml(Person.class)
-                    .process(this.myProcessor)
-                    .log("UK message: ${body}")
-                    .convertBodyTo(String.class)
-                    // TODO: Send message to RabbitMQ.
-                    .to("???").id("toUK")
-                .otherwise()
-                    .log("${body}")
-                    .unmarshal().jacksonXml(Person.class)
-                    .process(this.myProcessor)
-                    .log("Other message: ${body}")
-                    .convertBodyTo(String.class)
-                    // TODO: Send message to RabbitMQ.
-                    .to("???").id("toOthers")
-            .end()
-        ;
+                .log("${body}")
+                .unmarshal().jacksonXml(Person.class)
+                .process(this.myProcessor)
+                .log("London message: ${body}")
+                .convertBodyTo(String.class)
+                .to("rabbitmq:london?connectionFactory=#connectionFactory").id("toUKQueue")
+                .log(">>> Message sent to London Queue: ${body}")
+            .otherwise()
+                .log("${body}")
+                .unmarshal().jacksonXml(Person.class)
+                .process(this.myProcessor)
+                .log("Other message: ${body}")
+                .convertBodyTo(String.class)
+                .to("rabbitmq:others?connectionFactory=#connectionFactory").id("toOthersQueue")
+                .log(">>> Message sent to Others Queue: ${body}")
+            .end();
 
-        // TODO: Consume from RabbitMQ
-        from("???").id("fromUK")
-            .log("<<< Received from UK: ${body}");
+    from("rabbitmq:london?connectionFactory=#connectionFactory").id("fromUK")
+        .log("<<< Message received from London: ${body}");
 
-        from("???").id("fromOthers")
-                .log("<<< Received from Others: ${body}");
+    from("rabbitmq:others?connectionFactory=#connectionFactory").id("fromOthers")
+        .log("<<< Message received from Others: ${body}");
     }
 
 }
